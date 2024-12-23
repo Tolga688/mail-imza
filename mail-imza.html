@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail İmza Oluşturucu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .signature-preview {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .signature-preview p {
+            margin: 5px 0;
+        }
+        .signature-preview a {
+            text-decoration: none;
+            color: #1a73e8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mail İmza Oluşturucu</h1>
+    <form id="signatureForm">
+        <input type="text" id="name" placeholder="Adınızı Soyadınızı girin" required>
+        <input type="text" id="title" placeholder="Unvanınızı girin" required>
+        <input type="text" id="phone" placeholder="Telefon numaranızı girin" required>
+        <button type="submit">İmzanı Oluştur</button>
+    </form>
+
+    <canvas id="signatureCanvas" style="border: 1px solid #ccc; display: none;"></canvas>
+
+    <div id="signaturePreview" class="signature-preview" style="display: none;">
+        <h3>İmzanız:</h3>
+        <canvas id="signatureCanvasPreview"></canvas>
+        <!-- İndirme butonunu kaldırdık -->
+        <!-- <button id="downloadBtn">PNG Olarak İndir</button> -->
+    </div>
+
+    <script>
+        // Form submit işlemi
+        document.getElementById('signatureForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Formdan verileri al
+            const name = document.getElementById('name').value;
+            const title = document.getElementById('title').value;
+            const phone = document.getElementById('phone').value;
+
+            // Canvas'ı ve önizlemeyi güncelle
+            generateSignature(name, title, phone);
+        });
+
+        // İmza şablonunu ve kullanıcı bilgilerini canvas'a ekleme
+        function generateSignature(name, title, phone) {
+            const canvas = document.getElementById('signatureCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Canvas boyutları ayarla (şablonun boyutlarına göre)
+            canvas.width = 600;
+            canvas.height = 250;
+
+            // Şablon resmini yükle (Dosya yolunu buraya ekleyin)
+            const templateImage = new Image();
+            templateImage.src = '/Users/tolga/Desktop/Untitled design.png';  // Burada dosya yolunu kullanın
+
+            templateImage.onload = function() {
+                // Şablon resmi canvas'a yerleştirilir
+                ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
+
+                // Önceki kaydırma 99px, şimdi 15px sola kaydırıyoruz, toplamda 84px
+                const startX = 100 + 189 + 10 - 100 - 15;  // 5 cm sağa kaydırıldı (189px), 10px daha sağa kaydırıldı, 100px sola kaydırıldı ve 15px daha sola kaydırıldı
+                const lineWidth = 500; // Çizginin uzunluğu, sağa doğru genişleyecek alan
+
+                // Yazı rengi ve font ayarları
+                // İsim soyisim için lacivert
+                ctx.fillStyle = '#1a3b72';  // Lacivert
+                ctx.font = '16px Arial';  // 2 punto küçültüldü
+                ctx.fillText(name, startX, 45);  // Sola dayalı şekilde isim soyisim
+
+                // Ünvan için siyah ve küçük font
+                ctx.fillStyle = '#000';  // Siyah
+                ctx.font = '14px Arial';  // 2 punto küçültüldü
+                ctx.fillText(title, startX, 75);  // Sola dayalı şekilde ünvan
+
+                // Adres
+                const address = 'Hacettepe Teknokent Beytepe Kampüsü\n5.AR-GE Binası No:16 / 06800';
+                ctx.font = '12px Arial';  // 2 punto küçültüldü
+                const addressLines = address.split('\n');
+                let yPosition = 100;
+                addressLines.forEach(line => {
+                    ctx.fillText(line, startX, yPosition);
+                    yPosition += 20;  // Satır arası boşluk
+                });
+
+                // Telefon numarasını ekle
+                ctx.fillText(phone, startX, yPosition + 20);  // Telefonu sola dayalı yazıyoruz
+
+                // Web sitesi
+                const website = 'https://msspektral.tech/';
+                ctx.fillStyle = '#1a73e8';  // Lacivert renk
+                ctx.font = '12px Arial';  // 2 punto küçültüldü
+                ctx.fillText(website, startX, yPosition + 40);  // Web sitesi
+
+                // İmza önizlemesi
+                const previewCanvas = document.getElementById('signatureCanvasPreview');
+                previewCanvas.width = canvas.width;
+                previewCanvas.height = canvas.height;
+                const previewCtx = previewCanvas.getContext('2d');
+                previewCtx.drawImage(canvas, 0, 0);
+
+                // İmza önizlemesini göster
+                document.getElementById('signaturePreview').style.display = 'block';
+            };
+        }
+    </script>
+</body>
+</html>
