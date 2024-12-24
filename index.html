@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail İmza Oluşturucu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .signature-preview {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .signature-preview p {
+            margin: 5px 0;
+        }
+        .signature-preview a {
+            text-decoration: none;
+            color: #1a73e8;
+        }
+        .html-output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mail İmza Oluşturucu</h1>
+    <form id="signatureForm">
+        <input type="text" id="name" placeholder="Adınızı Soyadınızı girin" required>
+        <input type="text" id="title" placeholder="Unvanınızı girin" required>
+        <input type="text" id="phone" placeholder="Telefon numaranızı girin" required>
+        <input type="url" id="linkedin" placeholder="LinkedIn Profil Linki (isteğe bağlıdır)">
+        <button type="submit">İmzanızı Oluştur</button>
+    </form>
+
+    <div id="signaturePreview" class="signature-preview" style="display: none;">
+        <h3>İmzanız:</h3>
+        <div id="htmlSignature" style="display: none;"></div>
+        <button id="copyHtmlBtn">HTML Olarak Kopyala</button>
+    </div>
+
+    <script>
+        // Form submit işlemi
+        document.getElementById('signatureForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Formdan verileri al
+            const name = document.getElementById('name').value;
+            const title = document.getElementById('title').value;
+            const phone = document.getElementById('phone').value;
+            const linkedin = document.getElementById('linkedin').value;  // LinkedIn profil linki (isteğe bağlı)
+
+            // HTML imzasını oluştur
+            generateHtmlSignature(name, title, phone, linkedin);
+        });
+
+        // HTML imzasını oluşturma
+        function generateHtmlSignature(name, title, phone, linkedin) {
+            let htmlSignature = `
+                <div style="font-family: Arial, sans-serif; color: #333;">
+                    <p style="margin: 5px 0; font-size: 16px; color: #1a3b72;"><strong>${name}</strong></p>
+                    <p style="margin: 5px 0; font-size: 14px; color: #000;">${title}</p>
+                    <p style="margin: 5px 0; font-size: 12px; color: #000;">Hacettepe Teknokent Beytepe Kampüsü<br>5.AR-GE Binası No:16 / 06800</p>
+                    <p style="margin: 5px 0; font-size: 12px; color: #000;">Telefon: ${phone}</p>
+                    <p style="margin: 5px 0; font-size: 12px; color: #1a73e8;"><a href="https://msspektral.tech/" style="color: #1a73e8; text-decoration: none;">https://msspektral.tech/</a></p>`;
+
+            // LinkedIn profilini eklemek isteğe bağlı
+            if (linkedin) {
+                htmlSignature += `
+                    <p style="margin: 5px 0; font-size: 12px; color: #1a73e8;">
+                        <a href="${linkedin}" style="color: #1a73e8; text-decoration: none;">${linkedin}</a>
+                    </p>`;
+            }
+
+            htmlSignature += `</div>`;
+
+            // HTML imzasını önizlemede göster
+            document.getElementById('htmlSignature').innerHTML = htmlSignature;
+            document.getElementById('signaturePreview').style.display = 'block';
+        }
+
+        // HTML imzasını kopyalama işlevi
+        document.getElementById('copyHtmlBtn').addEventListener('click', function() {
+            const htmlCode = document.getElementById('htmlSignature').innerHTML;
+            const textArea = document.createElement('textarea');
+            textArea.value = htmlCode;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('HTML İmzanız kopyalandı!');
+        });
+    </script>
+</body>
+</html>
